@@ -1,0 +1,35 @@
+top_file: '../md_run/pyridine_dmso_box.top'  # MD topology file
+coor_file: '../md_run/production_out.dcd'  # MD coordinates file
+vel_file: '../md_run/production_out.veldcd'  # MD velocities file
+Ninit: 5  # number of selected MD frames and initial conditions
+radius: 22.0  # sphere radius
+inner_radius: 19.5  # approx radius - solvent molecule half diameter
+solute_frcmod: '../md_preparation/param_pyridine_all.frcmod'  # solute frcmod file with vDW (NONBON) MM parameters
+solvent_frcmod: '../md_preparation/frcmod.dmso'  # solvent frcmod file with MM parameters (BOND, ANGL, DIHEDR, NONBON sections must be present, also empty)
+gau_input: |
+  %mem=64gb
+  %nproc=20
+  %chk=gaussian.chk
+  # oniom(pbe1pbe/def2svp:amber=softfirst)=(embedcharge) nosymm
+
+  Title
+
+  0 1  0 1  0 1
+# Gaussian16 Link1, command line, title, and charge/multiplicity
+basis: 'def2svp'  # basis set
+nx_input: |
+  &nxconfig
+    nstat = 1
+    nstatdyn = 1
+    progname = gaussian
+    methodname = tddft
+    dt = 0.4
+    tmax = 1500
+    etot_drift = 50.0
+    etot_jump = 50.0
+    thres = 0
+  /
+  &constraints
+    freeze_atoms = .true.
+  /
+# NX input for QM/MM equilibration (without nat, it will be added by the program)
